@@ -1,5 +1,8 @@
 package soc.samsung.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -9,9 +12,22 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import soc.samsung.dto.*;
+import soc.samsung.po.serviceTrustPO;
 
 @Path("/")
 public class mobileService {
+	
+	public List<Point> verifyPoints;
+	public List<String> streetNames;
+	public List<serviceTrustPO> serviceTrust;
+	
+	public mobileService() {
+		// TODO Auto-generated constructor stub
+		verifyPoints = new ArrayList<Point>();
+		streetNames = new ArrayList<String>();
+		serviceTrust = new ArrayList<serviceTrustPO>();		
+	}
+	
 
     @GET
     @Consumes("application/json")
