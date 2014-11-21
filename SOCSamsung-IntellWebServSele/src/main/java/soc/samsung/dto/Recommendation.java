@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 public class Recommendation {
     private String recommendedURI;
-
+    
     public void setRecommendedURI(String uri) {
         this.recommendedURI = uri;
     }

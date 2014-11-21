@@ -12,15 +12,85 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import soc.samsung.context.UserContext;
+import soc.samsung.dto.StreetSegment;
+import soc.samsung.po.serviceTrustPO;
 
 public class ServicesData {
-	public void getServiceData(UserContext context){ //Input should be Service ID and user Context
+
+	private String url;
+	private int duration;
+	private StreetSegment segment;
+	
+	public String getServiceUrl(){
+		return url;
+	}
+	
+	public int getDurationForSegment(){
+		return duration;
+	}
+	
+	public StreetSegment getStreetSegment(){
+		return segment;
+	}
+
+	/**
+	 * Get any service data
+	 * @param serviceTrust
+	 * @param segment
+	 * @param context
+	 */
+	public void getServiceData(serviceTrustPO serviceTrust, StreetSegment segment, UserContext context){
+
+		String resJsonString;
 		
-		//		Assuming we get the URL details from service ID
-		String url = "https://maps.googleapis.com/maps/api/directions/json?"
-				+ "origin=" + context.getCurrentLocation() + "&destination=" + context.getToLocation() + "&"
-				+ "key=" + context.apiKey;
-		
+		if(serviceTrust == null || segment == null)
+			return; 
+		else{
+			if(serviceTrust.serviceUrl.equals("http://dev.virtualearth.net/REST/V1/Routes/Driving")){
+				url = "http://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&"
+						+ "wp.0=" + segment.getPointA().getLatitude() + "," + segment.getPointA().getLongitude() + "&"
+						+ "wp.1=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
+						+ "avoid=minimizeTolls&key=" + context.getBingKey();
+				
+				resJsonString = getData(url);
+				parseBingJson(resJsonString);
+			}
+			
+			else if(serviceTrust.serviceUrl.equals("http://open.mapquestapi.com/directions/v2/route")){
+				url = "http://open.mapquestapi.com/directions/v2/route?"
+						+ "key="+ context.getMapQuestKey() + "&"
+						+ "outFormat=json&routeType=fastest&timeType=1&enhancedNarrative=false&shapeFormat=raw&"
+						+ "generalize=0&locale=en_US&unit=m&"
+						+ "from=" + segment.getPointA().getLatitude() + "," + segment.getPointA().getLongitude() + "&"
+						+ "to=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
+						+ "drivingStyle=2&highwayEfficiency=21.0";
+				
+				resJsonString = getData(url);
+				parseMapQuestJson(resJsonString);
+			}
+			
+			else if(serviceTrust.serviceUrl.equals("http://maps.googleapis.com/maps/api/directions/output")){
+				url = "https://maps.googleapis.com/maps/api/directions/json?"
+						+ "origin=" + segment.getPointA().getLatitude() + "," + segment.getPointB().getLongitude() 
+						+ "&destination=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
+						+ "key=" + context.getGoogleKey();
+				
+				resJsonString = getData(url);
+				parseGoogleJson(resJsonString);
+			}
+			else
+				return;
+		}
+	}
+
+	/**
+	 * HTTP URL call to get Service data
+	 * @param segment
+	 * @param context
+	 */
+	private String getData(String url){
+
+		StringBuffer response = null;
 		try {
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -28,53 +98,86 @@ public class ServicesData {
 			// optional default is GET
 			con.setRequestMethod("GET");
 
-			int responseCode = con.getResponseCode();
-//			System.out.println("\nSending 'GET' request to URL : " + url);
-			System.out.println("Response Code : " + responseCode);
+//			int responseCode = con.getResponseCode();
+			//			System.out.println("\nSending 'GET' request to URL : " + url);
+//			System.out.println("Response Code : " + responseCode);
 
 			BufferedReader in;
 			in = new BufferedReader(
 					new InputStreamReader(con.getInputStream()));
 			String inputLine;
-			StringBuffer response = new StringBuffer();
+			response = new StringBuffer();
 
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine);
 			}
-			
-			//Send result for parsing
-			parseJson(response.toString());
-			
+
+//			//Send result for parsing
+//			parseGoogleJson(response.toString());
+
 			in.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return;
+		if(response != null)
+			return response.toString();
+		else
+			return null;
 	}
 	
 	/**
-	 * 
+	 * parse google JSON
 	 * @param jsonString
 	 */
-	public void parseJson(String jsonString){
-		
-		JsonElement jelement = new JsonParser().parse(jsonString);
-	    JsonObject  jobject = jelement.getAsJsonObject();
-	    
-//	    Get the first route
-	    JsonArray routes = jobject.getAsJsonArray("routes");
-	    JsonObject route = routes.get(0).getAsJsonObject();
-	    
-//	    Get the main leg of route from start to finish
-	    JsonArray legs =route.getAsJsonArray("legs");
-	    JsonObject leg = legs.get(0).getAsJsonObject();
-	    
-	    JsonObject objDuration = leg.getAsJsonObject("duration");
-	    int duration = objDuration.get("value").getAsInt();
-	    String durationTxt = objDuration.get("text").toString();
+	private void parseGoogleJson(String jsonString){
 
-		System.out.println(duration + " Seconds\n" + durationTxt);
+		JsonElement jelement = new JsonParser().parse(jsonString);
+		JsonObject  jobject = jelement.getAsJsonObject();
+
+		//	    Get the first route
+		JsonArray routes = jobject.getAsJsonArray("routes");
+		JsonObject route = routes.get(0).getAsJsonObject();
+
+		//	    Get the main leg of route from start to finish
+		JsonArray legs =route.getAsJsonArray("legs");
+		JsonObject leg = legs.get(0).getAsJsonObject();
+
+		JsonObject objDuration = leg.getAsJsonObject("duration");
+		duration = objDuration.get("value").getAsInt();
 		
+//		String durationTxt = objDuration.get("text").toString();
+
+//		System.out.println(duration + " Seconds\n" + durationTxt);
+
+	}
+
+	/**
+	 * parse Bing JSon
+	 * @param jsonString
+	 * @return
+	 */
+	private void parseBingJson(String jsonString){
+		JsonElement jelement = new JsonParser().parse(jsonString);
+
+		JsonObject  jobject = jelement.getAsJsonObject();
+
+		JsonArray resourceSet = jobject.getAsJsonArray("resourceSets");
+
+		JsonArray resources = resourceSet.get(0).getAsJsonObject().getAsJsonArray("resources");
+
+		duration = resources.get(0).getAsJsonObject().get("travelDurationTraffic").getAsInt();
+
+	}
+
+	/**
+	 * parse MapQuest JSON
+	 * @param jsonString
+	 * @return
+	 */
+	private void parseMapQuestJson(String jsonString){
+
+		JsonElement jelement = new JsonParser().parse(jsonString);
+		duration = jelement.getAsJsonObject().getAsJsonObject("route").get("time").getAsInt();
 	}
 }
