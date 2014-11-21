@@ -5,14 +5,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import soc.samsung.dto.StreetRegistration;
-import soc.samsung.dto.StreetSegment;
-import soc.samsung.dto.Evaluation;
-import soc.samsung.dto.StreetSample;
+import soc.samsung.dto.*;
 
 @Path("/")
 public class mobileService {
@@ -21,23 +17,26 @@ public class mobileService {
     @Consumes("application/json")
     @Produces("application/json")
     @Path("/register")
-    public Response registerStreet(StreetRegistration street) {
-        System.out.println("in");
-        return ok(); // Returns Behavior
+    public Behavior registerStreet(StreetRegistration street) {
+        Behavior behavior = new Behavior();
+        behavior.setBehavior("sample");
+        return behavior;
     }
 
     @GET
     @Consumes("application/json")
     @Produces("application/json")
     @Path("/recommendation")
-    public Response recommendation(StreetSegment segment) {
-        return ok(null); // Returns recommendation
+    public Recommendation recommendation(Point segment) {
+        Recommendation recommend = new Recommendation();
+        recommend.setRecommendedURI("http://recommended");
+        return recommend;
     }
 
     @POST
     @Consumes("application/json")
     @Path("/evaluation_start")
-    public Response evaluationStart(StreetSegment segment) {
+    public Response evaluationStart(Point segment) {
         return ok();
     }
 
