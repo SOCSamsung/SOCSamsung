@@ -1,7 +1,5 @@
 package soc.samsung.dto;
 
-import soc.samsung.po.serviceTrustPO;
-
 import com.google.gson.Gson;
 
 public class Evaluation {
@@ -28,11 +26,6 @@ public class Evaluation {
     public long getMilliseconds() {
         return milliseconds;
     }
-    
-//    public void evaluate(Evaluation e, serviceTrustPO trustObj){
-//    Loop through all services and update trust index
-//    	for()
-//    }
 
     public void setMilliseconds(long milliseconds) {
         this.milliseconds = milliseconds;

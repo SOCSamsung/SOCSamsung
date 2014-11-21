@@ -60,13 +60,12 @@ public class mobileService {
         System.out.println("**** Recommendation Requested ******");
         
     	/* TODO: Non-Random Recommendation logic */
-//        Recommendation recommend =  new Recommendation();
-//        recommend.generateRecommendation(serviceTrust);
         
         System.out.println(serviceTrust);
     	serviceTrustPO item = serviceTrust.get(0);
 
-        System.out.println("**** Random Recommendation Provided: " + item.getServiceName() + " ******");
+        System.out.println("**** Random Recommendation Provided: " + item.getServiceName() + "******");
+      
     	
         ServicesData resultData = new ServicesData();
         resultData.getServiceData(item, segment, context);
@@ -116,8 +115,6 @@ public class mobileService {
     	List<Integer> list = underEvaluation.get(streetName).get(segment);
     	
     	/* TODO: evaluation logic */
-//    	evaluation.evaluate(underEvaluation, serviceTrust);
-    	
     	
         return ok();
     }

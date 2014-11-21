@@ -41,23 +41,23 @@ public class ServicesData {
 	 */
 	public void getServiceData(serviceTrustPO serviceTrust, StreetSegment segment, UserContext context){
 
-		String resJsonString, lv_url;
+		String resJsonString;
 		
 		if(serviceTrust == null || segment == null)
 			return; 
 		else{
 			if(serviceTrust.getServiceUrl().equals("http://dev.virtualearth.net/REST/V1/Routes/Driving")){
-				lv_url = "http://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&"
+				url = "http://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&"
 						+ "wp.0=" + segment.getPointA().getLatitude() + "," + segment.getPointA().getLongitude() + "&"
 						+ "wp.1=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
 						+ "avoid=minimizeTolls&key=" + context.getBingKey();
 				
-				resJsonString = getData(lv_url);
+				resJsonString = getData(url);
 				parseBingJson(resJsonString);
 			}
 			
 			else if(serviceTrust.getServiceUrl().equals("http://open.mapquestapi.com/directions/v2/route")){
-				lv_url = "http://open.mapquestapi.com/directions/v2/route?"
+				url = "http://open.mapquestapi.com/directions/v2/route?"
 						+ "key="+ context.getMapQuestKey() + "&"
 						+ "outFormat=json&routeType=fastest&timeType=1&enhancedNarrative=false&shapeFormat=raw&"
 						+ "generalize=0&locale=en_US&unit=m&"
@@ -65,22 +65,17 @@ public class ServicesData {
 						+ "to=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
 						+ "drivingStyle=2&highwayEfficiency=21.0";
 				
-				resJsonString = getData(lv_url);
+				resJsonString = getData(url);
 				parseMapQuestJson(resJsonString);
 			}
 			
 			else if(serviceTrust.getServiceUrl().equals("http://maps.googleapis.com/maps/api/directions/output")){
-				lv_url = "https://maps.googleapis.com/maps/api/directions/json?"
+				url = "https://maps.googleapis.com/maps/api/directions/json?"
 						+ "origin=" + segment.getPointA().getLatitude() + "," + segment.getPointB().getLongitude() 
 						+ "&destination=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
 						+ "key=" + context.getGoogleKey();
 				
-				
-				url = "https://www.google.com/maps/@"
-						+ segment.getPointA().getLatitude() + "," 
-						+ segment.getPointA().getLongitude() + ",16z";
-				
-				resJsonString = getData(lv_url);
+				resJsonString = getData(url);
 				parseGoogleJson(resJsonString);
 			}
 			else
