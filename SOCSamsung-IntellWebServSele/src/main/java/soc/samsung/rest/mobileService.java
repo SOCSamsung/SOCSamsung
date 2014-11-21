@@ -25,14 +25,14 @@ public class mobileService {
 		
 		/* Hard-coded services */
 		serviceTrustPO bingService = new serviceTrustPO();
-		bingService.serviceUrl = "http://dev.virtualearth.net/REST/V1/Routes/Driving";
-		bingService.trustValue = 0;
+		bingService.setServiceUrl("http://dev.virtualearth.net/REST/V1/Routes/Driving");
+		bingService.setServiceTrustValue(0);
 		serviceTrustPO mapquestService = new serviceTrustPO();
-		mapquestService.serviceUrl = "http://open.mapquestapi.com/directions/v2/route";
-		mapquestService.trustValue = 0;
+		mapquestService.setServiceUrl("http://open.mapquestapi.com/directions/v2/route");
+		mapquestService.setServiceTrustValue(0);
 		serviceTrustPO googleService = new serviceTrustPO();
-		googleService.serviceUrl = "http://maps.googleapis.com/maps/api/directions/output";
-		googleService.trustValue = 0;
+		googleService.setServiceUrl("http://maps.googleapis.com/maps/api/directions/output");
+		googleService.setServiceTrustValue(0);
 		serviceTrust.add(bingService);
 		serviceTrust.add(mapquestService);
 		serviceTrust.add(googleService);
@@ -47,9 +47,12 @@ public class mobileService {
         String streetName = street.getStreetName();
         Behavior behavior = new Behavior();
         if (verifyPoints.containsKey(streetName)) {
+        	System.out.println("**** Another user has registered********");
+        	System.out.println("**** System has started service Verification********");
         	behavior.setBehavior("evaluate");
         	behavior.setVerificationPoints(verifyPoints.get(streetName));
         } else {
+        	System.out.println("**** Sampling the road now********\n");
         	behavior.setBehavior("sample");
         	behavior.setVerificationPoints(null);
         }
@@ -62,6 +65,7 @@ public class mobileService {
     @Path("/sampleregistration")
     public StreetRegistration sampleRegistration() {
         StreetRegistration dummy_registration = new StreetRegistration();
+        System.out.println("**** Street Registered********");
         dummy_registration.setStreetName("Murlagan Ave");
         return dummy_registration;
     }
