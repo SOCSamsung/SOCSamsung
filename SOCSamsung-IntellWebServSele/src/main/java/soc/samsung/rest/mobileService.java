@@ -23,6 +23,66 @@ public class mobileService {
         return behavior;
     }
 
+    /* JSON Showcase classes */
+    @GET
+    @Produces("application/json")
+    @Path("/sampleregistration")
+    public StreetRegistration sampleRegistration() {
+        StreetRegistration dummy_registration = new StreetRegistration();
+        dummy_registration.setStreetName("Murlagan Ave");
+        return dummy_registration;
+    }
+
+    @GET
+    @Produces("application/json")
+    @Path("/samplesegment")
+    public StreetSegment sampleSegment() {
+        StreetSegment dummy_segment = new StreetSegment();
+        Point a = new Point();
+        a.setLatitude(75.8);
+        a.setLongitude(27.8);
+        dummy_segment.setPointA(a);
+        Point b = new Point();
+        a.setLatitude(35.8);
+        a.setLongitude(87.8);
+        dummy_segment.setPointB(b);
+        return dummy_segment;
+    }
+
+    @GET
+    @Produces("application/json")
+    @Path("/sampleevaluation")
+    public Evaluation sampleEvaluation() {
+        Evaluation eval = new Evaluation();
+
+        StreetSegment dummy_segment = new StreetSegment();
+        Point a = new Point();
+        a.setLatitude(75.8);
+        a.setLongitude(27.8);
+        dummy_segment.setPointA(a);
+        Point b = new Point();
+        a.setLatitude(35.8);
+        a.setLongitude(87.8);
+        dummy_segment.setPointB(b);
+        eval.setSegment(dummy_segment);
+        eval.setMilliseconds(12312436232L);
+        return eval;
+    }
+
+    @GET
+    @Produces("application/json")
+    @Path("/samplesample")
+    public StreetSample sampleSample() {
+        StreetSample sample = new StreetSample();
+        sample.setStreetName("Super High Street");
+
+        Point a = new Point();
+        a.setLatitude(75.8);
+        a.setLongitude(27.8);
+        sample.setSample(a);
+        return sample;
+    }
+    /* End of JSON Showcase classes */
     @GET
     @Consumes("application/json")
     @Produces("application/json")
