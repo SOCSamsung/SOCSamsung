@@ -18,6 +18,7 @@ route = [(40.3,45.2), (40.4,45.2), (40.5,45.2), (40.5,45.3), (40.5,45.4), (40.6,
 payload = {'streetName':'Moffet Blvd'}
 r = requests.post(host + '/register', data=json.dumps(payload), headers=headers)
 
+print r.text
 response = json.loads(r.text)
 print response
 behavior = response['behavior']

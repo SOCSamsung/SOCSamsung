@@ -12,7 +12,6 @@ import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 @Path("/")
 public class mobileService {
@@ -20,31 +19,14 @@ public class mobileService {
 	private HashMap<String, List<Point>> verifyPoints;
 	private HashMap<String, HashMap<StreetSegment, List<Integer>>> underEvaluation;
 	private List<serviceTrustPO> serviceTrust;
-	private Random randomGenerator;
 	private UserContext context;
 	
 	public mobileService() {
-		verifyPoints = new HashMap<String, List<Point>>();
-		underEvaluation = new HashMap<String, HashMap<StreetSegment, List<Integer>>>();
-		serviceTrust = new ArrayList<serviceTrustPO>();
-		context = new UserContext();
-		
-		/* Hard-coded services */
-		serviceTrustPO bingService = new serviceTrustPO();
-		bingService.setServiceUrl("http://dev.virtualearth.net/REST/V1/Routes/Driving");
-		bingService.setServiceTrustValue(0);
-		bingService.setServiceName("Bing");
-		serviceTrustPO mapquestService = new serviceTrustPO();
-		mapquestService.setServiceUrl("http://open.mapquestapi.com/directions/v2/route");
-		mapquestService.setServiceTrustValue(0);
-		mapquestService.setServiceName("MapQuest");
-		serviceTrustPO googleService = new serviceTrustPO();
-		googleService.setServiceUrl("http://maps.googleapis.com/maps/api/directions/output");
-		googleService.setServiceTrustValue(0);
-		googleService.setServiceName("Google");
-		serviceTrust.add(bingService);
-		serviceTrust.add(mapquestService);
-		serviceTrust.add(googleService);
+		State state = State.getInstance();
+		verifyPoints = state.verifyPoints;
+		underEvaluation = state.underEvaluation;
+		serviceTrust = state.serviceTrust;
+		context = state.context;
 	}
 	
 
@@ -65,6 +47,7 @@ public class mobileService {
         	behavior.setBehavior("sample");
         	behavior.setVerificationPoints(null);
         }
+        System.out.println("**** ******");
         return behavior;
     }
 
@@ -78,8 +61,8 @@ public class mobileService {
         
     	/* TODO: Non-Random Recommendation logic */
         
-    	int index = randomGenerator.nextInt(serviceTrust.size());
-    	serviceTrustPO item = serviceTrust.get(index);
+        System.out.println(serviceTrust);
+    	serviceTrustPO item = serviceTrust.get(0);
 
         System.out.println("**** Random Recommendation Provided: " + item.getServiceName() + "******");
       
