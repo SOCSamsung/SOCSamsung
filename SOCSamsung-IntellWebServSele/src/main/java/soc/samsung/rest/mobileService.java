@@ -1,5 +1,7 @@
 package soc.samsung.rest;
 
+import soc.samsung.context.UserContext;
+import soc.samsung.discovery.ServicesData;
 import soc.samsung.dto.*;
 import soc.samsung.po.serviceTrustPO;
 
@@ -16,23 +18,30 @@ import java.util.Random;
 public class mobileService {
 
 	private HashMap<String, List<Point>> verifyPoints;
+	private HashMap<StreetSegment, List<Integer>> underEvaluation;
 	private List<serviceTrustPO> serviceTrust;
 	private Random randomGenerator;
+	private UserContext context;
 	
 	public mobileService() {
 		verifyPoints = new HashMap<>();
+		underEvaluation = new HashMap<>();
 		serviceTrust = new ArrayList<serviceTrustPO>();
+		context = new UserContext();
 		
 		/* Hard-coded services */
 		serviceTrustPO bingService = new serviceTrustPO();
 		bingService.setServiceUrl("http://dev.virtualearth.net/REST/V1/Routes/Driving");
 		bingService.setServiceTrustValue(0);
+		bingService.setServiceName("Bing");
 		serviceTrustPO mapquestService = new serviceTrustPO();
 		mapquestService.setServiceUrl("http://open.mapquestapi.com/directions/v2/route");
 		mapquestService.setServiceTrustValue(0);
+		mapquestService.setServiceName("MapQuest");
 		serviceTrustPO googleService = new serviceTrustPO();
 		googleService.setServiceUrl("http://maps.googleapis.com/maps/api/directions/output");
 		googleService.setServiceTrustValue(0);
+		googleService.setServiceName("Google");
 		serviceTrust.add(bingService);
 		serviceTrust.add(mapquestService);
 		serviceTrust.add(googleService);
@@ -47,106 +56,59 @@ public class mobileService {
         String streetName = street.getStreetName();
         Behavior behavior = new Behavior();
         if (verifyPoints.containsKey(streetName)) {
-        	System.out.println("**** Another user has registered********");
-        	System.out.println("**** System has started service Verification********");
+        	System.out.println("**** A user registered for " + streetName + " ******");
+        	System.out.println("**** System has started service Verification ******");
         	behavior.setBehavior("evaluate");
         	behavior.setVerificationPoints(verifyPoints.get(streetName));
         } else {
-        	System.out.println("**** Sampling the road now********\n");
+        	System.out.println("**** No previous data found for " + streetName + ", Sampling road ******");
         	behavior.setBehavior("sample");
         	behavior.setVerificationPoints(null);
         }
         return behavior;
     }
 
-    /* JSON Showcase classes */
-    @GET
-    @Produces("application/json")
-    @Path("/sampleregistration")
-    public StreetRegistration sampleRegistration() {
-        StreetRegistration dummy_registration = new StreetRegistration();
-        System.out.println("**** Street Registered********");
-        dummy_registration.setStreetName("Murlagan Ave");
-        return dummy_registration;
-    }
-
-    @GET
-    @Produces("application/json")
-    @Path("/samplesegment")
-    public StreetSegment sampleSegment() {
-        StreetSegment dummy_segment = new StreetSegment();
-        Point a = new Point();
-        a.setLatitude(75.8);
-        a.setLongitude(27.8);
-        dummy_segment.setPointA(a);
-        Point b = new Point();
-        a.setLatitude(35.8);
-        a.setLongitude(87.8);
-        dummy_segment.setPointB(b);
-        return dummy_segment;
-    }
-
-    @GET
-    @Produces("application/json")
-    @Path("/sampleevaluation")
-    public Evaluation sampleEvaluation() {
-        Evaluation eval = new Evaluation();
-
-        StreetSegment dummy_segment = new StreetSegment();
-        Point a = new Point();
-        a.setLatitude(75.8);
-        a.setLongitude(27.8);
-        dummy_segment.setPointA(a);
-        Point b = new Point();
-        a.setLatitude(35.8);
-        a.setLongitude(87.8);
-        dummy_segment.setPointB(b);
-        eval.setSegment(dummy_segment);
-        eval.setMilliseconds(12312436232L);
-        return eval;
-    }
-
-    @GET
-    @Produces("application/json")
-    @Path("/samplesample")
-    public StreetSample sampleSample() {
-        StreetSample sample = new StreetSample();
-        sample.setStreetName("Super High Street");
-
-        Point a = new Point();
-        a.setLatitude(75.8);
-        a.setLongitude(27.8);
-        sample.setSample(a);
-        return sample;
-    }
-    /* End of JSON Showcase classes */
     
     @GET
     @Consumes("application/json")
     @Produces("application/json")
     @Path("/recommendation")
-    public Recommendation recommendation(Point segment) {
-    	/* TODO: Non-Random Recommendation logic */
-    	int index = randomGenerator.nextInt(serviceTrust.size());
-        serviceTrustPO item = serviceTrust.get(index);
+    public Recommendation recommendation(StreetSegment segment) {
+        System.out.println("**** Recommendation Requested ******");
         
-        /* TODO:  call services and get map uris*/
+    	/* TODO: Non-Random Recommendation logic */
+        
+    	int index = randomGenerator.nextInt(serviceTrust.size());
+    	serviceTrustPO item = serviceTrust.get(index);
+
+        System.out.println("**** Random Recommendation Provided: " + item.getServiceName() + "******");
+      
+    	
+        ServicesData resultData = new ServicesData();
+        resultData.getServiceData(item, segment, context);
+
         Recommendation recommend = new Recommendation();
-        recommend.setRecommendedURI("dummy");
+        recommend.setRecommendedURI(resultData.getServiceUrl());
+        recommend.setServiceName(item.getServiceName());
         return recommend;
     }
 
     @POST
     @Consumes("application/json")
     @Path("/evaluation_start")
-    public Response evaluationStart(Point segment) {
-        return ok();
+    public Response evaluationStart(StreetSegment segment) {
+    	System.out.println("**** Starting Evaluation for street segment starting from (" + Double.toString(segment.getPointA().getLatitude()) +
+    			", " + Double.toString(segment.getPointA().getLongitude()) + ") *****" );
+    	return ok();
     }
 
     @POST
     @Consumes("application/json")
     @Path("/evaluate")
     public Response evaluate(Evaluation evaluation) {
+    	StreetSegment segment = evaluation.getSegment();
+    	System.out.println("**** Received evaluation for street segment starting from (" + Double.toString(segment.getPointA().getLatitude()) +
+    			", " + Double.toString(segment.getPointA().getLongitude()) + ") *****");
         return ok();
     }
 
@@ -154,7 +116,8 @@ public class mobileService {
     @Consumes("application/json")
     @Path("/streetsample")
     public Response submitPoint(StreetSample sample) {
-    	String street = sample.getStreetName();
+      	String street = sample.getStreetName();
+    	System.out.println("*** New Street Sample received for " + street + " *****");
     	Point samplePoint = sample.getSample();
     	if (verifyPoints.containsKey(street)) {
     		verifyPoints.get(street).add(samplePoint);
