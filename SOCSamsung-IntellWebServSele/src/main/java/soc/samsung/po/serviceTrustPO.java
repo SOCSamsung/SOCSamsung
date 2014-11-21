@@ -1,6 +1,6 @@
 package soc.samsung.po;
 
-public class serviceTrustPO {
+public class serviceTrustPO implements Comparable<serviceTrustPO> {
 	private String serviceName;
 	private String serviceUrl;
 	private int trustValue;
@@ -27,6 +27,17 @@ public class serviceTrustPO {
 	
 	public void setServiceTrustValue(int value){
 		trustValue = value;
+	}
+
+	@Override
+	public int compareTo(serviceTrustPO o) {
+		// TODO Auto-generated method stub, Descending Order
+		if(this.getServiceTrustValue() < o.getServiceTrustValue())
+			return 1;
+		else if(this.getServiceTrustValue() > o.getServiceTrustValue())
+			return -1;
+		else
+			return 0;
 	}
 	
 }
