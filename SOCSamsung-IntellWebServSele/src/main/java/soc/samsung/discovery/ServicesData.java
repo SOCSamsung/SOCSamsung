@@ -46,7 +46,7 @@ public class ServicesData {
 		if(serviceTrust == null || segment == null)
 			return; 
 		else{
-			if(serviceTrust.serviceUrl.equals("http://dev.virtualearth.net/REST/V1/Routes/Driving")){
+			if(serviceTrust.getServiceUrl().equals("http://dev.virtualearth.net/REST/V1/Routes/Driving")){
 				url = "http://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&"
 						+ "wp.0=" + segment.getPointA().getLatitude() + "," + segment.getPointA().getLongitude() + "&"
 						+ "wp.1=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
@@ -56,7 +56,7 @@ public class ServicesData {
 				parseBingJson(resJsonString);
 			}
 			
-			else if(serviceTrust.serviceUrl.equals("http://open.mapquestapi.com/directions/v2/route")){
+			else if(serviceTrust.getServiceUrl().equals("http://open.mapquestapi.com/directions/v2/route")){
 				url = "http://open.mapquestapi.com/directions/v2/route?"
 						+ "key="+ context.getMapQuestKey() + "&"
 						+ "outFormat=json&routeType=fastest&timeType=1&enhancedNarrative=false&shapeFormat=raw&"
@@ -69,7 +69,7 @@ public class ServicesData {
 				parseMapQuestJson(resJsonString);
 			}
 			
-			else if(serviceTrust.serviceUrl.equals("http://maps.googleapis.com/maps/api/directions/output")){
+			else if(serviceTrust.getServiceUrl().equals("http://maps.googleapis.com/maps/api/directions/output")){
 				url = "https://maps.googleapis.com/maps/api/directions/json?"
 						+ "origin=" + segment.getPointA().getLatitude() + "," + segment.getPointB().getLongitude() 
 						+ "&destination=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
