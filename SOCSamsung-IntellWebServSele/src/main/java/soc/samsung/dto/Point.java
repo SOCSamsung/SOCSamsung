@@ -6,6 +6,14 @@ public class Point {
     private double longitude;
     private double latitude;
 
+    public Point(double longitude, double latitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+    
+    public Point() {
+    }
+    
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
