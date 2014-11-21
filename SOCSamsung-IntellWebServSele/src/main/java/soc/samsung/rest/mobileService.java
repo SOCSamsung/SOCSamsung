@@ -23,7 +23,7 @@ public class mobileService {
 		verifyPoints = new HashMap<>();
 		serviceTrust = new ArrayList<serviceTrustPO>();
 		
-		/* Hardcoded services */
+		/* Hard-coded services */
 		serviceTrustPO bingService = new serviceTrustPO();
 		bingService.serviceUrl = "http://dev.virtualearth.net/REST/V1/Routes/Driving";
 		bingService.trustValue = 0;
@@ -31,7 +31,7 @@ public class mobileService {
 		mapquestService.serviceUrl = "http://open.mapquestapi.com/directions/v2/route";
 		mapquestService.trustValue = 0;
 		serviceTrustPO googleService = new serviceTrustPO();
-		googleService.serviceUrl = "http://dummyurl";
+		googleService.serviceUrl = "http://maps.googleapis.com/maps/api/directions/output";
 		googleService.trustValue = 0;
 		serviceTrust.add(bingService);
 		serviceTrust.add(mapquestService);
