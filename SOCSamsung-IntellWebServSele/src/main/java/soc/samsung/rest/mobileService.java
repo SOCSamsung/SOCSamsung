@@ -1,31 +1,41 @@
 package soc.samsung.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import soc.samsung.dto.*;
 import soc.samsung.po.serviceTrustPO;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+
 @Path("/")
 public class mobileService {
-	
-	public List<Point> verifyPoints;
-	public List<String> streetNames;
-	public List<serviceTrustPO> serviceTrust;
+
+	private HashMap<String, List<Point>> verifyPoints;
+	private List<serviceTrustPO> serviceTrust;
+	private Random randomGenerator;
 	
 	public mobileService() {
-		// TODO Auto-generated constructor stub
-		verifyPoints = new ArrayList<Point>();
-		streetNames = new ArrayList<String>();
-		serviceTrust = new ArrayList<serviceTrustPO>();		
+		verifyPoints = new HashMap<>();
+		serviceTrust = new ArrayList<serviceTrustPO>();
+		
+		/* Hardcoded services */
+		serviceTrustPO bingService = new serviceTrustPO();
+		bingService.serviceUrl = "http://dev.virtualearth.net/REST/V1/Routes/Driving";
+		bingService.trustValue = 0;
+		serviceTrustPO mapquestService = new serviceTrustPO();
+		mapquestService.serviceUrl = "http://open.mapquestapi.com/directions/v2/route";
+		mapquestService.trustValue = 0;
+		serviceTrustPO googleService = new serviceTrustPO();
+		googleService.serviceUrl = "http://dummyurl";
+		googleService.trustValue = 0;
+		serviceTrust.add(bingService);
+		serviceTrust.add(mapquestService);
+		serviceTrust.add(googleService);
 	}
 	
 
@@ -34,8 +44,15 @@ public class mobileService {
     @Produces("application/json")
     @Path("/register")
     public Behavior registerStreet(StreetRegistration street) {
+        String streetName = street.getStreetName();
         Behavior behavior = new Behavior();
-        behavior.setBehavior("sample");
+        if (verifyPoints.containsKey(streetName)) {
+        	behavior.setBehavior("evaluate");
+        	behavior.setVerificationPoints(verifyPoints.get(streetName));
+        } else {
+        	behavior.setBehavior("sample");
+        	behavior.setVerificationPoints(null);
+        }
         return behavior;
     }
 
@@ -99,13 +116,19 @@ public class mobileService {
         return sample;
     }
     /* End of JSON Showcase classes */
+    
     @GET
     @Consumes("application/json")
     @Produces("application/json")
     @Path("/recommendation")
     public Recommendation recommendation(Point segment) {
+    	/* TODO: Non-Random Recommendation logic */
+    	int index = randomGenerator.nextInt(serviceTrust.size());
+        serviceTrustPO item = serviceTrust.get(index);
+        
+        /* TODO:  call services and get map uris*/
         Recommendation recommend = new Recommendation();
-        recommend.setRecommendedURI("http://recommended");
+        recommend.setRecommendedURI("dummy");
         return recommend;
     }
 
@@ -127,6 +150,15 @@ public class mobileService {
     @Consumes("application/json")
     @Path("/streetsample")
     public Response submitPoint(StreetSample sample) {
+    	String street = sample.getStreetName();
+    	Point samplePoint = sample.getSample();
+    	if (verifyPoints.containsKey(street)) {
+    		verifyPoints.get(street).add(samplePoint);
+    	} else {
+    		ArrayList<Point> newList = new ArrayList<Point>();
+    		newList.add(samplePoint);
+    		verifyPoints.put(street, newList);
+    	}
         return ok();
     }
 

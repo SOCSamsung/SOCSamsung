@@ -3,23 +3,23 @@ package soc.samsung.dto;
 import com.google.gson.Gson;
 
 public class Point {
-    private float longitude;
-    private float latitude;
+    private double longitude;
+    private double latitude;
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public void setLatitude(float latitude) {
-        this.latitude = longitude;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
 
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
