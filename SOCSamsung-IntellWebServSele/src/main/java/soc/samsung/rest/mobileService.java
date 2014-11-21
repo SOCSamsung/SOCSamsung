@@ -18,14 +18,14 @@ import java.util.Random;
 public class mobileService {
 
 	private HashMap<String, List<Point>> verifyPoints;
-	private HashMap<StreetSegment, List<Integer>> underEvaluation;
+	private HashMap<String, HashMap<StreetSegment, List<Integer>>> underEvaluation;
 	private List<serviceTrustPO> serviceTrust;
 	private Random randomGenerator;
 	private UserContext context;
 	
 	public mobileService() {
-		verifyPoints = new HashMap<>();
-		underEvaluation = new HashMap<>();
+		verifyPoints = new HashMap<String, List<Point>>();
+		underEvaluation = new HashMap<String, HashMap<StreetSegment, List<Integer>>>();
 		serviceTrust = new ArrayList<serviceTrustPO>();
 		context = new UserContext();
 		
@@ -48,7 +48,7 @@ public class mobileService {
 	}
 	
 
-    @GET
+    @POST
     @Consumes("application/json")
     @Produces("application/json")
     @Path("/register")
@@ -69,7 +69,7 @@ public class mobileService {
     }
 
     
-    @GET
+    @POST
     @Consumes("application/json")
     @Produces("application/json")
     @Path("/recommendation")
@@ -96,9 +96,24 @@ public class mobileService {
     @POST
     @Consumes("application/json")
     @Path("/evaluation_start")
-    public Response evaluationStart(StreetSegment segment) {
-    	System.out.println("**** Starting Evaluation for street segment starting from (" + Double.toString(segment.getPointA().getLatitude()) +
+    public Response evaluationStart(Evaluation evaluation) {
+    	StreetSegment segment = evaluation.getSegment();
+    	String streetName = evaluation.getStreetName();
+    	System.out.println("**** Starting Evaluation for street segment starting at (" + Double.toString(segment.getPointA().getLatitude()) +
     			", " + Double.toString(segment.getPointA().getLongitude()) + ") *****" );
+    	if (!underEvaluation.containsKey(streetName)) {
+    		underEvaluation.put(streetName, new HashMap<StreetSegment, List<Integer>>());
+    	}
+		HashMap<StreetSegment, List<Integer>> map = underEvaluation.get(streetName);
+		List<Integer> list = new ArrayList<Integer>();
+	 
+    	for (serviceTrustPO service : serviceTrust) {
+            ServicesData resultData = new ServicesData();
+            resultData.getServiceData(service, segment, context);
+    		list.add(resultData.getDurationForSegment());
+    	}
+		map.put(segment, list);
+		
     	return ok();
     }
 
@@ -107,8 +122,17 @@ public class mobileService {
     @Path("/evaluate")
     public Response evaluate(Evaluation evaluation) {
     	StreetSegment segment = evaluation.getSegment();
-    	System.out.println("**** Received evaluation for street segment starting from (" + Double.toString(segment.getPointA().getLatitude()) +
+    	String streetName = evaluation.getStreetName();
+    	Integer duration = (int) (evaluation.getMilliseconds()/1000) / 60 ; // minutes
+    	System.out.println("**** Received evaluation for street segment starting at (" + Double.toString(segment.getPointA().getLatitude()) +
     			", " + Double.toString(segment.getPointA().getLongitude()) + ") *****");
+    	System.out.println("- The segment was measured at " + Integer.toString(duration) + " minutes");
+    	
+    	/* Evaluation Logic */
+    	List<Integer> list = underEvaluation.get(streetName).get(segment);
+    	
+    	/* TODO: evaluation logic */
+    	
         return ok();
     }
 
