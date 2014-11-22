@@ -60,6 +60,8 @@ public class mobileService {
         System.out.println("**** Recommendation Requested ******");
         
     	/* TODO: Non-Random Recommendation logic */
+//      Recommendation recommend =  new Recommendation();
+//      recommend.generateRecommendation(serviceTrust);
         
         System.out.println(serviceTrust);
     	serviceTrustPO item = serviceTrust.get(0);
