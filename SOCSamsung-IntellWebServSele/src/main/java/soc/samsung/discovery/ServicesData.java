@@ -65,13 +65,15 @@ public class ServicesData {
 						+ "to=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
 						+ "drivingStyle=2&highwayEfficiency=21.0";
 				
-				resJsonString = getData(this.url);
+				//Map Quest API provides an embedded link that can be generated
+
+				resJsonString = getData(url);
 				parseMapQuestJson(resJsonString);
 			}
 			
 			else if(serviceTrust.getServiceUrl().equals("http://maps.googleapis.com/maps/api/directions/output")){
 				this.url = "https://maps.googleapis.com/maps/api/directions/json?"
-						+ "origin=" + segment.getPointA().getLatitude() + "," + segment.getPointB().getLongitude() 
+						+ "origin=" + segment.getPointA().getLatitude() + "," + segment.getPointB().getLongitude()
 						+ "&destination=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
 						+ "key=" + context.getGoogleKey();
 				

@@ -1,5 +1,11 @@
 package soc.samsung.dto;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import soc.samsung.po.serviceTrustPO;
+
 import com.google.gson.Gson;
 
 public class Recommendation {
@@ -25,6 +31,13 @@ public class Recommendation {
     @Override
     public String toString() {
         return new Gson().toJson(this);
+    }
+    
+    public void generateRecommendation(List<serviceTrustPO> serviceTrust){
+    	List<serviceTrustPO> obj = new ArrayList<serviceTrustPO>(serviceTrust);
+    	Collections.sort(obj);
+    	recommendedURI = obj.get(0).getServiceUrl();
+    	serviceName = obj.get(0).getServiceName();
     }
 
 }
