@@ -100,7 +100,7 @@ public class mobileService {
 
     @POST
     @Consumes("application/json")
-    @Path("/evaluation_start")
+    @Path("/evaluationstart")
     public Response evaluationStart(Evaluation evaluation) {
         StreetSegment segment = new StreetSegment();
         Point a = new Point(evaluation.getStartlong(), evaluation.getStartlat());
@@ -109,17 +109,16 @@ public class mobileService {
         segment.setPointB(b);
 
     	String streetName = evaluation.getStreetName();
-    	System.out.println("**** Starting Evaluation for " + streetName);
     	if (!underEvaluation.containsKey(streetName)) {
     		underEvaluation.put(streetName, new HashMap<StreetSegment, List<Integer>>());
     	}
 		HashMap<StreetSegment, List<Integer>> map = underEvaluation.get(streetName);
+
 		List<Integer> list = new ArrayList<Integer>();
 	 
     	for (serviceTrustPO service : serviceTrust) {
             ServicesData resultData = new ServicesData();
             resultData.getServiceData(service, segment, context);
-            System.out.println(resultData.getDurationForSegment());
     		list.add(resultData.getDurationForSegment());
     	}
         System.out.println(list);
@@ -139,16 +138,20 @@ public class mobileService {
         segment.setPointA(a);
         segment.setPointB(b);
 
+
     	String streetName = evaluation.getStreetName();
     	Integer duration = (int) (evaluation.getMilliseconds()/1000) / 60 ; // minutes
-    	System.out.println("**** Received evaluation for " + streetName + " *****");
     	System.out.println("- The segment was measured at " + evaluation.getMilliseconds() + " ms");
-    	
+        System.out.println("**** Received evaluation for " + streetName + " *****");
+
     	/* Evaluation Logic */
+        System.out.println(underEvaluation);
     	List<Integer> list = underEvaluation.get(streetName).get(segment);
+        System.out.println("under evaluation list");
+        System.out.println(list); // TODO: null, fix in start_evaluation
 
     	/* TODO: evaluation logic */
-    	
+
         return ok();
     }
 
