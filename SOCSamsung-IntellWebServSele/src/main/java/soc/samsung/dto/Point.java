@@ -24,7 +24,6 @@ public class Point {
 
     public double getLongitude() {
         return longitude;
-
     }
 
     public double getLatitude() {

@@ -33,11 +33,4 @@ public class Recommendation {
         return new Gson().toJson(this);
     }
     
-    public void generateRecommendation(List<serviceTrustPO> serviceTrust){
-    	List<serviceTrustPO> obj = new ArrayList<serviceTrustPO>(serviceTrust);
-    	Collections.sort(obj);
-    	recommendedURI = obj.get(0).getServiceUrl();
-    	serviceName = obj.get(0).getServiceName();
-    }
-
 }

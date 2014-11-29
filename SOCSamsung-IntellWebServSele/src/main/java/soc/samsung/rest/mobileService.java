@@ -60,13 +60,21 @@ public class mobileService {
     public Recommendation recommendation(Evaluation evaluation) {
         System.out.println("**** Recommendation Requested ******");
         
-    	/* TODO: Non-Random Recommendation logic */
         String streetName = evaluation.getStreetName();
-//      Recommendation recommend =  new Recommendation();
-//      recommend.generateRecommendation(serviceTrust);
-        
-        System.out.println(serviceTrust);
-    	serviceTrustPO item = serviceTrust.get(2);
+
+
+        /* Find the item with the maximum trust value */
+        int max_trust = 0;
+        serviceTrustPO max_item = serviceTrust.get(0);
+
+        for (serviceTrustPO item : serviceTrust) {
+            if (item.getServiceTrustValue() >= max_trust) {
+                max_trust = item.getServiceTrustValue();
+                max_item = item;
+            }
+        }
+
+        Recommendation recommend =  new Recommendation();
 
         /* Manually reconstruct the segment */
         StreetSegment segment = new StreetSegment();
@@ -75,22 +83,18 @@ public class mobileService {
         segment.setPointA(a);
         segment.setPointB(b);
 
-        System.out.println("segment");
-        System.out.println(segment);
         System.out.println("whole thing");
         System.out.println(evaluation);
-        System.out.println("**** Random Recommendation Provided: " + item.getServiceName() + "******");
+        System.out.println("**** Recommendation Provided: " + max_item.getServiceName() + "******");
 
 
         ServicesData resultData = new ServicesData();
-        resultData.getServiceData(item, segment, context);
+        resultData.getServiceData(max_item, segment, context);
 
-        System.out.println("Time measured for " + item.getServiceName());   // TODO debug
+        System.out.println("Time measured for " + max_item.getServiceName());   // TODO debug
         System.out.println(resultData.getDurationForSegment());
 
-        Recommendation recommend = new Recommendation();
         recommend.setRecommendedURI(resultData.getServiceUrl());
-        recommend.setServiceName(item.getServiceName());
         return recommend;
     }
 
@@ -142,7 +146,7 @@ public class mobileService {
     	
     	/* Evaluation Logic */
     	List<Integer> list = underEvaluation.get(streetName).get(segment);
-    	
+
     	/* TODO: evaluation logic */
     	
         return ok();

@@ -48,8 +48,8 @@ public class ServicesData {
 		else{
 			if (serviceTrust.getServiceName().equals("Bing")){
 				this.url = "http://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&" +
-						"wp.0=" + segment.getPointA().getLatitude() + "," + segment.getPointA().getLongitude() + "&" +
-						"wp.1=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&" +
+						"wp.0=" + segment.getPointA().getLongitude() + "," + segment.getPointA().getLatitude() + "&" +
+						"wp.1=" + segment.getPointB().getLongitude() + "," + segment.getPointB().getLatitude() + "&" +
 						"avoid=minimizeTolls&key=" + context.getBingKey();
 				
 				resJsonString = getData(this.url);
@@ -61,8 +61,8 @@ public class ServicesData {
 						+ "key="+ context.getMapQuestKey() + "&"
 						+ "outFormat=json&routeType=fastest&timeType=1&enhancedNarrative=false&shapeFormat=raw&"
 						+ "generalize=0&locale=en_US&unit=m&"
-						+ "from=" + segment.getPointA().getLatitude() + "," + segment.getPointA().getLongitude() + "&"
-						+ "to=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
+						+ "from=" + segment.getPointA().getLongitude() + "," + segment.getPointA().getLatitude() + "&"
+						+ "to=" + segment.getPointB().getLongitude() + "," + segment.getPointB().getLatitude() + "&"
 						+ "drivingStyle=2&highwayEfficiency=21.0";
 				
 				//Map Quest API provides an embedded link that can be generated
@@ -73,8 +73,8 @@ public class ServicesData {
 			
 			else if(serviceTrust.getServiceUrl().equals("http://maps.googleapis.com/maps/api/directions/output")){
 				this.url = "https://maps.googleapis.com/maps/api/directions/json?"
-						+ "origin=" + segment.getPointA().getLatitude() + "," + segment.getPointB().getLongitude()
-						+ "&destination=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
+						+ "origin=" + segment.getPointA().getLongitude() + "," + segment.getPointA().getLatitude()
+						+ "&destination=" + segment.getPointB().getLongitude() + "," + segment.getPointB().getLatitude() + "&"
 						+ "key=" + context.getGoogleKey();
 				
 				resJsonString = getData(this.url);
@@ -114,9 +114,6 @@ public class ServicesData {
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine);
 			}
-
-			//Send result for parsing
-			parseGoogleJson(response.toString());
 
 			in.close();
 		} catch (IOException e) {
