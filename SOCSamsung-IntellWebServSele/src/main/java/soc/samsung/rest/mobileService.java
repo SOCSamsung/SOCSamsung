@@ -1,9 +1,5 @@
 package soc.samsung.rest;
 
-import soc.samsung.context.UserContext;
-import soc.samsung.discovery.ServicesData;
-import soc.samsung.dto.*;
-import soc.samsung.po.serviceTrustPO;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -12,6 +8,11 @@ import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import soc.samsung.dto.*;
+import soc.samsung.context.UserContext;
+import soc.samsung.discovery.ServicesData;
+import soc.samsung.po.serviceTrustPO;
 
 @Path("/")
 public class mobileService {
@@ -56,19 +57,34 @@ public class mobileService {
     @Consumes("application/json")
     @Produces("application/json")
     @Path("/recommendation")
-    public Recommendation recommendation(StreetSegment segment) {
+    public Recommendation recommendation(Evaluation evaluation) {
         System.out.println("**** Recommendation Requested ******");
         
     	/* TODO: Non-Random Recommendation logic */
-        
-        System.out.println(serviceTrust);
-    	serviceTrustPO item = serviceTrust.get(0);
 
+        String streetName = evaluation.getStreetName();
+        System.out.println(serviceTrust);
+    	serviceTrustPO item = serviceTrust.get(2);
+
+        /* Manually reconstruct the segment */
+        StreetSegment segment = new StreetSegment();
+        Point a = new Point(evaluation.getStartlong(), evaluation.getStartlat());
+        Point b = new Point(evaluation.getEndlong(), evaluation.getEndlat());
+        segment.setPointA(a);
+        segment.setPointB(b);
+
+        System.out.println("segment");
+        System.out.println(segment);
+        System.out.println("whole thing");
+        System.out.println(evaluation);
         System.out.println("**** Random Recommendation Provided: " + item.getServiceName() + "******");
-      
-    	
+
+
         ServicesData resultData = new ServicesData();
         resultData.getServiceData(item, segment, context);
+
+        System.out.println("Time measured for " + item.getServiceName());   // TODO debug
+        System.out.println(resultData.getDurationForSegment());
 
         Recommendation recommend = new Recommendation();
         recommend.setRecommendedURI(resultData.getServiceUrl());
@@ -80,10 +96,14 @@ public class mobileService {
     @Consumes("application/json")
     @Path("/evaluation_start")
     public Response evaluationStart(Evaluation evaluation) {
-    	StreetSegment segment = evaluation.getSegment();
+        StreetSegment segment = new StreetSegment();
+        Point a = new Point(evaluation.getStartlong(), evaluation.getStartlat());
+        Point b = new Point(evaluation.getEndlong(), evaluation.getEndlat());
+        segment.setPointA(a);
+        segment.setPointB(b);
+
     	String streetName = evaluation.getStreetName();
-    	System.out.println("**** Starting Evaluation for street segment starting at (" + Double.toString(segment.getPointA().getLatitude()) +
-    			", " + Double.toString(segment.getPointA().getLongitude()) + ") *****" );
+    	System.out.println("**** Starting Evaluation for " + streetName);
     	if (!underEvaluation.containsKey(streetName)) {
     		underEvaluation.put(streetName, new HashMap<StreetSegment, List<Integer>>());
     	}
@@ -93,8 +113,10 @@ public class mobileService {
     	for (serviceTrustPO service : serviceTrust) {
             ServicesData resultData = new ServicesData();
             resultData.getServiceData(service, segment, context);
+            System.out.println(resultData.getDurationForSegment());
     		list.add(resultData.getDurationForSegment());
     	}
+        System.out.println(list);
 		map.put(segment, list);
 		
     	return ok();
@@ -104,12 +126,17 @@ public class mobileService {
     @Consumes("application/json")
     @Path("/evaluate")
     public Response evaluate(Evaluation evaluation) {
-    	StreetSegment segment = evaluation.getSegment();
+
+        StreetSegment segment = new StreetSegment();
+        Point a = new Point(evaluation.getStartlong(), evaluation.getStartlat());
+        Point b = new Point(evaluation.getEndlong(), evaluation.getEndlat());
+        segment.setPointA(a);
+        segment.setPointB(b);
+
     	String streetName = evaluation.getStreetName();
     	Integer duration = (int) (evaluation.getMilliseconds()/1000) / 60 ; // minutes
-    	System.out.println("**** Received evaluation for street segment starting at (" + Double.toString(segment.getPointA().getLatitude()) +
-    			", " + Double.toString(segment.getPointA().getLongitude()) + ") *****");
-    	System.out.println("- The segment was measured at " + Integer.toString(duration) + " minutes");
+    	System.out.println("**** Received evaluation for " + streetName + " *****");
+    	System.out.println("- The segment was measured at " + evaluation.getMilliseconds() + " ms");
     	
     	/* Evaluation Logic */
     	List<Integer> list = underEvaluation.get(streetName).get(segment);
@@ -126,6 +153,7 @@ public class mobileService {
       	String street = sample.getStreetName();
     	System.out.println("*** New Street Sample received for " + street + " *****");
     	Point samplePoint = sample.getSample();
+        System.out.println(" Long: " + Double.toString(samplePoint.getLongitude()) + " Lat: " + Double.toString(samplePoint.getLatitude()));
     	if (verifyPoints.containsKey(street)) {
     		verifyPoints.get(street).add(samplePoint);
     	} else {

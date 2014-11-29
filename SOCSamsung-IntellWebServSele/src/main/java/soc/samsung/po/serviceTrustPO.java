@@ -22,7 +22,7 @@ public class serviceTrustPO {
 	}
 	
 	public void setServiceUrl(String url){
-		serviceUrl = url;
+		this.serviceUrl = url;
 	}
 	
 	public void setServiceTrustValue(int value){

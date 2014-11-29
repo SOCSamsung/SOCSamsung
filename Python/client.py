@@ -1,5 +1,6 @@
 import requests
 import json
+import sys
 from time import sleep
 from random import randrange
 
@@ -8,14 +9,18 @@ headers = {"content-type":"application/json"}
 N = 5
 
 
-# (long, lat)
-route = [(40.3,45.2), (40.4,45.2), (40.5,45.2), (40.5,45.3), (40.5,45.4), (40.6,45.4), \
-    (40.7,45.5), (40.7,45.6), (40.8,45.6), (40.8,45.7), (40.8,45.8), (40.9,45.8)]
+# Generate a route from the file specified in the first argument
+
+routes_file = open(sys.argv[1], 'r')
+route_name = routes_file.readline().strip()
+route = [(float(line.split()[0]), float(line.split()[1])) for line in routes_file]
+print route_name
+print route
 
 
 
 # Register street
-payload = {'streetName':'Moffet Blvd'}
+payload = {'streetName' : route_name}
 r = requests.post(host + '/register', data=json.dumps(payload), headers=headers)
 
 print r.text
@@ -27,24 +32,21 @@ if behavior != 'sample':
 
 count = 0
 for longitude, latitude in route:
-
-
-
     if behavior == 'sample':
         if count == 0:
-            pointa = (longitude, latitude)
-            pointb = route[1]
-            payload = {'streetName':'Moffet Blvd', \
-                'segment': {'a': {'longitude':pointa[0], 'latitude':pointa[1]}, \
-                            'b': {'longitude':pointb[0], 'latitude':pointb[1]} \
-                        }   \
-                }
+            pointa = {'longitude':route[0][0], 'latitude':route[0][1]}
+            pointb = {'longitude':route[1][0], 'latitude':route[1][1]}
+            payload = {'streetName':route_name, \
+                'startlong':pointa['longitude'], 'startlat':pointa['latitude'], \
+                'endlong': pointb['longitude'], 'endlat':pointb['latitude'], \
+                'milliseconds': 0}
+            print json.dumps(payload)
             r = requests.post(host + '/recommendation', data=json.dumps(payload), headers=headers)
             print "received recommendation"
             print r.text
             count += 1
 
-        payload = {'streetName':'Moffet Blvd', \
+        payload = {'streetName': route_name, \
                     'sample':{'longitude':longitude, 'latitude':latitude}}
         r = requests.post(host + '/streetsample', data=json.dumps(payload), headers=headers)
         sleep(1)
@@ -57,35 +59,33 @@ for longitude, latitude in route:
 
         if count == 0:
             count = N
-            payload = {'streetName':'Moffet Blvd', \
-                'segment': {'a': {'longitude':pointa['longitude'], 'latitude':pointa['latitude']}, \
-                            'b': {'longitude':pointb['longitude'], 'latitude':pointb['latitude']} \
-                           }   \
-                }
+            payload = {'streetName':route_name, \
+                'startlong':pointa['longitude'], 'startlat':pointa['latitude'], \
+                'endlong': pointb['longitude'], 'endlat':pointb['latitude'], \
+                'milliseconds': 0}
+            print json.dumps(payload)
+
             r = requests.post(host + '/recommendation', data=json.dumps(payload), headers=headers)
             print "received recommendation"
             print r.text
         count -= 1
 
         print "Evaluating next segment"
-        payload = {'streetName':'Moffet Blvd', \
-                'segment': {'a': {'longitude':pointa['longitude'], 'latitude':pointa['latitude']}, \
-                            'b': {'longitude':pointb['longitude'], 'latitude':pointb['latitude']} \
-                           },   \
-                'milliseconds': 0}
+        payload = {'streetName':route_name, \
+            'startlong':pointa['longitude'], 'startlat':pointa['latitude'], \
+            'endlong': pointb['longitude'], 'endlat':pointb['latitude'], \
+            'milliseconds': 0}
+        print "started evaluation"
         r = requests.post(host + '/evaluationstart', data=json.dumps(payload), headers=headers)
-        time_taken = randrange(1000 , 3000)
+        time_taken = randrange(3000 , 8000)
+        print time_taken
         sleep(float(time_taken) / 1000)
 
-        payload = {'streetName':'Moffet Blvd', \
-                'segment': {'a': {'longitude':pointa['longitude'], 'latitude':pointa['latitude']}, \
-                            'b': {'longitude':pointb['longitude'], 'latitude':pointb['latitude']} \
-                           },   \
-                'milliseconds': time_taken}
+        payload = {'streetName':route_name, \
+            'startlong':pointa['longitude'], 'startlat':pointa['latitude'], \
+            'endlong': pointb['longitude'], 'endlat':pointb['latitude'], \
+            'milliseconds': time_taken}
+
         r = requests.post(host + '/evaluate', data=json.dumps(payload), headers=headers)
         print "Segment Evaluated"
-
-
-
-
 

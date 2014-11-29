@@ -4,13 +4,13 @@ import com.google.gson.Gson;
 
 public class Evaluation {
 	private String streetName;
-    private StreetSegment segment;
+    private double startlong;
+    private double startlat;
+    private double endlong;
+    private double endlat;
     private long milliseconds;
 
-    public void setSegment(StreetSegment segment) {
-        this.segment = segment;
-    }
-    
+
     public void setStreetName(String streetName) {
     	this.streetName = streetName;
     }
@@ -19,8 +19,36 @@ public class Evaluation {
     	return streetName;
     }
 
-    public StreetSegment getSegment() {
-        return segment;
+    public double getStartlong() {
+        return startlong;
+    }
+
+    public void setStartlong(double startlong) {
+        this.startlong = startlong;
+    }
+
+    public double getStartlat() {
+        return startlat;
+    }
+
+    public void setStartlat(double startlat) {
+        this.startlat = startlat;
+    }
+
+    public double getEndlong() {
+        return endlong;
+    }
+
+    public void setEndlong(double endlong) {
+        this.endlong = endlong;
+    }
+
+    public double getEndlat() {
+        return endlat;
+    }
+
+    public void setEndlat(double endlat) {
+        this.endlat = endlat;
     }
 
     public long getMilliseconds() {
