@@ -4,7 +4,8 @@ import sys
 from time import sleep
 from random import randrange
 
-host = 'http://127.0.0.1:8080'
+#host = 'http://127.0.0.1:8080'
+host = 'ec2-54-172-86-50.compute-1.amazonaws.com:8080'
 headers = {"content-type":"application/json"}
 N = 5
 
