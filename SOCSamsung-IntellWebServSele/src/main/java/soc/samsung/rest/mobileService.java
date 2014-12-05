@@ -140,11 +140,12 @@ public class mobileService {
     	Double duration = (double) (evaluation.getMilliseconds()/1000) / 60 ; // minutes
         System.out.println("**** Received evaluation for " + streetName + " *****");
     	System.out.println("-- The segment was measured at " + evaluation.getMilliseconds() + " ms --");
+        System.out.println(evaluation);
 
     	/* Evaluation Logic */
     	List<Double> list = underEvaluation.get(streetName).get(segment.toString());
-        System.out.println(list);
         if (list != null) {
+            System.out.println(list);
             /* Service Evaluation */
             for (int i=0; i < list.size(); i++) {
                 serviceTrust.get(i).setServiceTrustValue(((10 - (duration - list.get(i))) + (serviceTrust.get(i).getServiceTrustValue())) /2 );
