@@ -31,11 +31,11 @@ if behavior != 'sample':
     points = response['verificationPoints']
 
 count = 0
-for longitude, latitude in route:
+for latitude, longitude in route:
     if behavior == 'sample':
         if count == 0:
-            pointa = {'longitude':route[0][0], 'latitude':route[0][1]}
-            pointb = {'longitude':route[1][0], 'latitude':route[1][1]}
+            pointa = {'longitude':route[0][1], 'latitude':route[0][0]}
+            pointb = {'longitude':route[1][1], 'latitude':route[1][0]}
             payload = {'streetName':route_name, \
                 'startlong':pointa['longitude'], 'startlat':pointa['latitude'], \
                 'endlong': pointb['longitude'], 'endlat':pointb['latitude'], \

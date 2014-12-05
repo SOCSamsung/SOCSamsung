@@ -11,9 +11,8 @@ import java.util.Random;
 
 public class State {
 	public HashMap<String, List<Point>> verifyPoints;
-	public HashMap<String, HashMap<StreetSegment, List<Integer>>> underEvaluation;
+	public HashMap<String, HashMap<String, List<Double>>> underEvaluation;
 	public List<serviceTrustPO> serviceTrust;
-	public Random randomGenerator;
 	public UserContext context;
 	private static State instance = null;
 	
@@ -26,15 +25,15 @@ public class State {
 			instance = new State();
 			
 			instance.verifyPoints = new HashMap<String, List<Point>>();
-			instance.underEvaluation = new HashMap<String, HashMap<StreetSegment, List<Integer>>>();
+			instance.underEvaluation = new HashMap<String, HashMap<String, List<Double>>>();
 			instance.serviceTrust = new ArrayList<serviceTrustPO>();
 			instance.context = new UserContext();
 			
 			/* Hard-coded services */
-			serviceTrustPO bingService = new serviceTrustPO();
-			bingService.setServiceUrl("http://dev.virtualearth.net/REST/V1/Routes/Driving");
-			bingService.setServiceTrustValue(0);
-			bingService.setServiceName("Bing");
+			//serviceTrustPO bingService = new serviceTrustPO();
+			//bingService.setServiceUrl("http://dev.virtualearth.net/REST/V1/Routes/Driving");
+			//bingService.setServiceTrustValue(0);
+			//bingService.setServiceName("Bing");
 			serviceTrustPO mapquestService = new serviceTrustPO();
 			mapquestService.setServiceUrl("http://open.mapquestapi.com/directions/v2/route");
 			mapquestService.setServiceTrustValue(0);
@@ -44,7 +43,7 @@ public class State {
 			googleService.setServiceTrustValue(0);
 			googleService.setServiceName("Google");
 			
-			instance.serviceTrust.add(bingService);
+			//instance.serviceTrust.add(bingService);
 			instance.serviceTrust.add(mapquestService);
 			instance.serviceTrust.add(googleService);
 

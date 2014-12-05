@@ -3,7 +3,7 @@ package soc.samsung.po;
 public class serviceTrustPO implements Comparable<serviceTrustPO> {
 	private String serviceName;
 	private String serviceUrl;
-	private int trustValue;
+	private double trustValue;
 	
 	public String getServiceUrl(){
 		return serviceUrl;
@@ -17,7 +17,7 @@ public class serviceTrustPO implements Comparable<serviceTrustPO> {
 		this.serviceName = serviceName;
 	}
 	
-	public int getServiceTrustValue(){
+	public double getServiceTrustValue(){
 		return trustValue;
 	}
 	
@@ -25,7 +25,7 @@ public class serviceTrustPO implements Comparable<serviceTrustPO> {
 		this.serviceUrl = url;
 	}
 	
-	public void setServiceTrustValue(int value){
+	public void setServiceTrustValue(double value){
 		trustValue = value;
 	}
 

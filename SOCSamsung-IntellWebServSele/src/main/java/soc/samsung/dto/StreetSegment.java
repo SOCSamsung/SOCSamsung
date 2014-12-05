@@ -19,6 +19,7 @@ public class StreetSegment {
         return a;
     }
 
+
     public Point getPointB() {
         return b;
     }
@@ -26,5 +27,7 @@ public class StreetSegment {
     @Override
     public String toString() {
         return new Gson().toJson(this);
+
     }
+
 }

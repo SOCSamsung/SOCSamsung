@@ -18,7 +18,7 @@ import soc.samsung.po.serviceTrustPO;
 public class mobileService {
 
 	private HashMap<String, List<Point>> verifyPoints;
-	private HashMap<String, HashMap<StreetSegment, List<Integer>>> underEvaluation;
+	private HashMap<String, HashMap<String, List<Double>>> underEvaluation;
 	private List<serviceTrustPO> serviceTrust;
 	private UserContext context;
 	
@@ -48,7 +48,6 @@ public class mobileService {
         	behavior.setBehavior("sample");
         	behavior.setVerificationPoints(null);
         }
-        System.out.println("**** ******");
         return behavior;
     }
 
@@ -64,7 +63,7 @@ public class mobileService {
 
 
         /* Find the item with the maximum trust value */
-        int max_trust = 0;
+        double max_trust = 0;
         serviceTrustPO max_item = serviceTrust.get(0);
 
         for (serviceTrustPO item : serviceTrust) {
@@ -83,18 +82,13 @@ public class mobileService {
         segment.setPointA(a);
         segment.setPointB(b);
 
-        System.out.println("whole thing");
-        System.out.println(evaluation);
-        System.out.println("**** Recommendation Provided: " + max_item.getServiceName() + "******");
-
+        System.out.println("**** Recommendation Provided: " + max_item.getServiceName() + " ******");
 
         ServicesData resultData = new ServicesData();
         resultData.getServiceData(max_item, segment, context);
 
-        System.out.println("Time measured for " + max_item.getServiceName());   // TODO debug
-        System.out.println(resultData.getDurationForSegment());
-
         recommend.setRecommendedURI(resultData.getServiceUrl());
+        recommend.setServiceName(max_item.getServiceName());
         return recommend;
     }
 
@@ -102,6 +96,7 @@ public class mobileService {
     @Consumes("application/json")
     @Path("/evaluationstart")
     public Response evaluationStart(Evaluation evaluation) {
+        System.out.println("**** Starting Segment Evaluation ****");
         StreetSegment segment = new StreetSegment();
         Point a = new Point(evaluation.getStartlong(), evaluation.getStartlat());
         Point b = new Point(evaluation.getEndlong(), evaluation.getEndlat());
@@ -110,20 +105,22 @@ public class mobileService {
 
     	String streetName = evaluation.getStreetName();
     	if (!underEvaluation.containsKey(streetName)) {
-    		underEvaluation.put(streetName, new HashMap<StreetSegment, List<Integer>>());
+    		underEvaluation.put(streetName, new HashMap<String, List<Double>>());
     	}
-		HashMap<StreetSegment, List<Integer>> map = underEvaluation.get(streetName);
+		HashMap<String, List<Double>> map = underEvaluation.get(streetName);
 
-		List<Integer> list = new ArrayList<Integer>();
+		List<Double> list = new ArrayList<Double>();
 	 
     	for (serviceTrustPO service : serviceTrust) {
             ServicesData resultData = new ServicesData();
             resultData.getServiceData(service, segment, context);
     		list.add(resultData.getDurationForSegment());
     	}
+
+        System.out.println("Services responded with the following times:");
         System.out.println(list);
-		map.put(segment, list);
-		
+		map.put(segment.toString(), list);
+
     	return ok();
     }
 
@@ -140,19 +137,28 @@ public class mobileService {
 
 
     	String streetName = evaluation.getStreetName();
-    	Integer duration = (int) (evaluation.getMilliseconds()/1000) / 60 ; // minutes
-    	System.out.println("- The segment was measured at " + evaluation.getMilliseconds() + " ms");
+    	Double duration = (double) (evaluation.getMilliseconds()/1000) / 60 ; // minutes
         System.out.println("**** Received evaluation for " + streetName + " *****");
+    	System.out.println("-- The segment was measured at " + evaluation.getMilliseconds() + " ms --");
 
     	/* Evaluation Logic */
-        System.out.println(underEvaluation);
-    	List<Integer> list = underEvaluation.get(streetName).get(segment);
-        System.out.println("under evaluation list");
-        System.out.println(list); // TODO: null, fix in start_evaluation
+    	List<Double> list = underEvaluation.get(streetName).get(segment.toString());
+        System.out.println(list);
+        if (list != null) {
+            /* Service Evaluation */
+            for (int i=0; i < list.size(); i++) {
+                serviceTrust.get(i).setServiceTrustValue(((10 - (duration - list.get(i))) + (serviceTrust.get(i).getServiceTrustValue())) /2 );
+            }
+            System.out.println("Service trust updated: (Bing, Google, MapQuest)");
+            for (serviceTrustPO item : serviceTrust) {
+                System.out.println(item.getServiceName() + " " + Double.toString(item.getServiceTrustValue()));
+            }
+            return ok();
+        } else {
+            System.out.println("WARN: no service data was found for this segment");
+            return ok();
+        }
 
-    	/* TODO: evaluation logic */
-
-        return ok();
     }
 
     @POST

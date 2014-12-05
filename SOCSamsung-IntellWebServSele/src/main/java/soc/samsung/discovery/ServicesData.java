@@ -18,14 +18,14 @@ import soc.samsung.po.serviceTrustPO;
 public class ServicesData {
 
 	private String url;
-	private int duration;
+	private double duration;
 	private StreetSegment segment;
 	
 	public String getServiceUrl(){
 		return url;
 	}
 	
-	public int getDurationForSegment(){
+	public double getDurationForSegment(){
 		return duration;
 	}
 	
@@ -48,8 +48,8 @@ public class ServicesData {
 		else{
 			if (serviceTrust.getServiceName().equals("Bing")){
 				this.url = "http://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&" +
-						"wp.0=" + segment.getPointA().getLongitude() + "," + segment.getPointA().getLatitude() + "&" +
-						"wp.1=" + segment.getPointB().getLongitude() + "," + segment.getPointB().getLatitude() + "&" +
+						"wp.0=" + segment.getPointA().getLatitude() + "," + segment.getPointA().getLongitude() + "&" +
+						"wp.1=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&" +
 						"avoid=minimizeTolls&key=" + context.getBingKey();
 				
 				resJsonString = getData(this.url);
@@ -61,8 +61,8 @@ public class ServicesData {
 						+ "key="+ context.getMapQuestKey() + "&"
 						+ "outFormat=json&routeType=fastest&timeType=1&enhancedNarrative=false&shapeFormat=raw&"
 						+ "generalize=0&locale=en_US&unit=m&"
-						+ "from=" + segment.getPointA().getLongitude() + "," + segment.getPointA().getLatitude() + "&"
-						+ "to=" + segment.getPointB().getLongitude() + "," + segment.getPointB().getLatitude() + "&"
+						+ "from=" + segment.getPointA().getLatitude() + "," + segment.getPointA().getLongitude() + "&"
+						+ "to=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
 						+ "drivingStyle=2&highwayEfficiency=21.0";
 				
 				//Map Quest API provides an embedded link that can be generated
@@ -73,8 +73,8 @@ public class ServicesData {
 			
 			else if(serviceTrust.getServiceUrl().equals("http://maps.googleapis.com/maps/api/directions/output")){
 				this.url = "https://maps.googleapis.com/maps/api/directions/json?"
-						+ "origin=" + segment.getPointA().getLongitude() + "," + segment.getPointA().getLatitude()
-						+ "&destination=" + segment.getPointB().getLongitude() + "," + segment.getPointB().getLatitude() + "&"
+						+ "origin=" + segment.getPointA().getLatitude() + "," + segment.getPointA().getLongitude()
+						+ "&destination=" + segment.getPointB().getLatitude() + "," + segment.getPointB().getLongitude() + "&"
 						+ "key=" + context.getGoogleKey();
 				
 				resJsonString = getData(this.url);
@@ -88,8 +88,6 @@ public class ServicesData {
 
 	/**
 	 * HTTP URL call to get Service data
-	 * @param segment
-	 * @param context
 	 */
 	private String getData(String url){
 
@@ -104,6 +102,9 @@ public class ServicesData {
 			int responseCode = con.getResponseCode();
 						System.out.println("\nSending 'GET' request to URL : " + url);
 			System.out.println("Response Code : " + responseCode);
+			if (responseCode == 404) {
+				System.out.println("Received 404");
+			}
 
 			BufferedReader in;
 			in = new BufferedReader(
@@ -137,6 +138,10 @@ public class ServicesData {
 
 		//	    Get the first route
 		JsonArray routes = jobject.getAsJsonArray("routes");
+		if (routes.size() == 0) {
+			System.out.println("Google returned nothing");
+			duration = 0;
+		}
 		JsonObject route = routes.get(0).getAsJsonObject();
 
 		//	    Get the main leg of route from start to finish
@@ -144,11 +149,11 @@ public class ServicesData {
 		JsonObject leg = legs.get(0).getAsJsonObject();
 
 		JsonObject objDuration = leg.getAsJsonObject("duration");
-		duration = objDuration.get("value").getAsInt();
+		duration = objDuration.get("value").getAsDouble();
 
 		/* TODO: debug */
-		String durationTxt = objDuration.get("text").toString();
-		System.out.println(duration + " Seconds\n" + durationTxt);
+		//String durationTxt = objDuration.get("text").toString();
+		//System.out.println(duration + " Seconds\n" + durationTxt);
 
 	}
 
@@ -166,7 +171,7 @@ public class ServicesData {
 
 		JsonArray resources = resourceSet.get(0).getAsJsonObject().getAsJsonArray("resources");
 
-		duration = resources.get(0).getAsJsonObject().get("travelDurationTraffic").getAsInt();
+		duration = resources.get(0).getAsJsonObject().get("travelDurationTraffic").getAsDouble();
 
 	}
 
@@ -178,6 +183,6 @@ public class ServicesData {
 	private void parseMapQuestJson(String jsonString){
 
 		JsonElement jelement = new JsonParser().parse(jsonString);
-		duration = jelement.getAsJsonObject().getAsJsonObject("route").get("time").getAsInt();
+		duration = jelement.getAsJsonObject().getAsJsonObject("route").get("time").getAsDouble();
 	}
 }
