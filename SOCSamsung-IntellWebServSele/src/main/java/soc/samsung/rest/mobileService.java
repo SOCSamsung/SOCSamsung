@@ -136,7 +136,7 @@ public class mobileService {
 
             /* Service Evaluation */
             for (int i=0; i < list.size(); i++) {
-                serviceTrust.get(i).setServiceTrustValue(((10 - (duration - list.get(i))) + (serviceTrust.get(i).getServiceTrustValue())) /2 );
+                serviceTrust.get(i).setServiceTrustValue(((100 - Math.abs(duration - list.get(i))) + (serviceTrust.get(i).getServiceTrustValue())) /2 );
             }
             System.out.println("Service trust updated: (Bing, Google, MapQuest)");
             for (serviceTrustPO item : serviceTrust) {

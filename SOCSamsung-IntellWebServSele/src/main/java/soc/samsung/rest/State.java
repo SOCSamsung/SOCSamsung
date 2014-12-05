@@ -30,10 +30,10 @@ public class State {
 			instance.context = new UserContext();
 			
 			/* Hard-coded services */
-			//serviceTrustPO bingService = new serviceTrustPO();
-			//bingService.setServiceUrl("http://dev.virtualearth.net/REST/V1/Routes/Driving");
-			//bingService.setServiceTrustValue(0);
-			//bingService.setServiceName("Bing");
+			serviceTrustPO bingService = new serviceTrustPO();
+			bingService.setServiceUrl("http://dev.virtualearth.net/REST/V1/Routes/Driving");
+			bingService.setServiceTrustValue(0);
+			bingService.setServiceName("Bing");
 			serviceTrustPO mapquestService = new serviceTrustPO();
 			mapquestService.setServiceUrl("http://open.mapquestapi.com/directions/v2/route");
 			mapquestService.setServiceTrustValue(0);
