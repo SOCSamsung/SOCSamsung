@@ -94,22 +94,6 @@ public class mobileService {
 
     @POST
     @Consumes("application/json")
-    @Path("/evaluationstart")
-    public Response evaluationStart(Evaluation evaluation) {
-        System.out.println("**** Starting Segment Evaluation ****");
-        System.out.println(evaluation);
-        StreetSegment segment = new StreetSegment();
-        Point a = new Point(evaluation.getStartlong(), evaluation.getStartlat());
-        Point b = new Point(evaluation.getEndlong(), evaluation.getEndlat());
-        segment.setPointA(a);
-        segment.setPointB(b);
-
-
-    	return ok();
-    }
-
-    @POST
-    @Consumes("application/json")
     @Path("/evaluate")
     public Response evaluate(Evaluation evaluation) {
 
