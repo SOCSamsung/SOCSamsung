@@ -97,6 +97,7 @@ public class mobileService {
     @Path("/evaluationstart")
     public Response evaluationStart(Evaluation evaluation) {
         System.out.println("**** Starting Segment Evaluation ****");
+        System.out.println(evaluation);
         StreetSegment segment = new StreetSegment();
         Point a = new Point(evaluation.getStartlong(), evaluation.getStartlat());
         Point b = new Point(evaluation.getEndlong(), evaluation.getEndlat());
