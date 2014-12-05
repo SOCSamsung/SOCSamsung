@@ -43,7 +43,7 @@ public class State {
 			googleService.setServiceTrustValue(0);
 			googleService.setServiceName("Google");
 			
-			//instance.serviceTrust.add(bingService);
+			instance.serviceTrust.add(bingService);
 			instance.serviceTrust.add(mapquestService);
 			instance.serviceTrust.add(googleService);
 

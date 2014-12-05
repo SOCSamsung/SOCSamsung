@@ -5,7 +5,7 @@ from time import sleep
 from random import randrange
 
 #host = 'http://127.0.0.1:8080'
-host = 'ec2-54-172-86-50.compute-1.amazonaws.com:8080'
+host = 'http://54.172.86.50:8080'
 headers = {"content-type":"application/json"}
 N = 5
 
@@ -72,15 +72,9 @@ for latitude, longitude in route:
         count -= 1
 
         print "Evaluating next segment"
-        payload = {'streetName':route_name, \
-            'startlong':pointa['longitude'], 'startlat':pointa['latitude'], \
-            'endlong': pointb['longitude'], 'endlat':pointb['latitude'], \
-            'milliseconds': 0}
-        print "started evaluation"
-        r = requests.post(host + '/evaluationstart', data=json.dumps(payload), headers=headers)
         time_taken = randrange(3000 , 8000)
-        print time_taken
         sleep(float(time_taken) / 1000)
+        print time_taken
 
         payload = {'streetName':route_name, \
             'startlong':pointa['longitude'], 'startlat':pointa['latitude'], \
