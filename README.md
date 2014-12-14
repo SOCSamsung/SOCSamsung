@@ -1,4 +1,4 @@
 SOCSamsung
 ==========
 
-Intelligent Web Service Discovery and Ranking
+Intelligent Web Service Recommendation and Evaluation Service.
