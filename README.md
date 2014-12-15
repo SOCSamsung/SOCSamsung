@@ -1,14 +1,8 @@
 SOCSamsung
 ==========
 
-Web Service for Intelligent Web Service Recommendation and Evaluation Service.
-
-
-Android Application 
-===================
-
-The android application is included in the app/ folder
-
+Web Service Backend for Intelligent Web Service Recommendation and Evaluation Service.
+The Android Application is available at https://github.com/SOCSamsung/Milieu
 
 Java Backend
 ============
